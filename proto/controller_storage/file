@@ -1,0 +1,11 @@
+proto:
+     |controller_client
+     |controller_storage
+        |file.proto
+
+src:
+    |messages
+        |controller_client
+        |controller_storage
+            |file.pb.go
+        |message_handler.go

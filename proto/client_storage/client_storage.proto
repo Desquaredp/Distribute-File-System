@@ -1,0 +1,84 @@
+syntax = "proto3";
+option go_package = "./messages/client_storage";
+
+enum ErrorCode {
+    NO_ERROR = 0;
+    FILE_NOT_FOUND = 1;
+    FILE_ALREADY_EXISTS = 2;
+    FILE_SIZE_LIMIT_EXCEEDED = 3;
+    SERVER_ERROR = 4;
+    CHECKSUM_MISMATCH = 5;
+}
+
+// Client requests to store a file on the server
+message FilePutRequest {
+    string file_name = 1;
+    int64 file_size = 2;
+}
+
+// Server response to a FilePutRequest
+message FilePutResponse {
+    bool success = 1;
+    ErrorCode error_code = 2;
+    string file_name = 3;
+}
+
+// Client sends the contents of a file to the server
+//message FileDataRequest {
+//    bytes message_body = 1;
+//    bytes checksum = 2;
+//}
+
+message FileDataRequest {
+    string file_name = 1;
+    bytes message_body = 2;
+    bytes checksum = 3;
+    repeated string other_nodes = 4;
+}
+
+// Server response to a FileDataRequest
+message FileDataResponse {
+    bool success = 1;
+    ErrorCode error_code = 2;
+}
+
+// Client requests to retrieve a file from the server
+message FileGetRequest {
+    string file_name = 1;
+}
+
+// Server response to a FileGetRequest
+message FileGetResponse {
+    bool success = 1;
+    int64 file_size = 2;
+    bytes checksum = 3;
+    bytes message_body = 4;
+    ErrorCode error_code = 5;
+}
+
+
+// Server notifies the client that the file transfer is complete
+message FileTransferComplete {
+    bool success = 1;
+    ErrorCode error_code = 2;
+}
+
+// A wrapper message for client requests
+message ClientRequest {
+    oneof request {
+        FilePutRequest file_put_request = 1;
+        FileDataRequest file_data_request = 2;
+        FileGetRequest file_get_request = 3;
+    }
+}
+
+// A wrapper message for server responses
+message ServerResponse {
+    oneof response {
+        FilePutResponse file_put_response = 1;
+        FileDataResponse file_data_response = 2;
+        FileGetResponse file_get_response = 3;
+        FileTransferComplete file_transfer_complete = 5;
+    }
+}
+

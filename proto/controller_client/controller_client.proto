@@ -1,0 +1,127 @@
+syntax = "proto3";
+option go_package = "./messages/controller_client";
+
+
+
+
+message ControllerMessage{
+  enum StatusCode {
+    OK = 0;
+    ERROR = 1;
+    FILE_NOT_FOUND = 2;
+    FILE_ALREADY_EXISTS = 3;
+    FILE_TOO_LARGE = 4;
+  }
+
+  message PlanResponse {
+
+    message StorageNodeInfo {
+      string storage_node_id = 1;
+      string host = 2;
+      string port = 3;
+    }
+
+    message FragmentInfo {
+      string fragment_id = 1;
+      int64 size = 2;
+      repeated StorageNodeInfo storage_node_ids = 3;
+    }
+
+    StatusCode status_code = 1;
+    uint32 total_num_fragments = 2;
+    repeated FragmentInfo fragment_layout = 5;
+  }
+
+  message FragLayoutResponse {
+
+    message StorageNodeInfo {
+      string storage_node_id = 1;
+      string host = 2;
+      string port = 3;
+    }
+
+    message FragmentInfo {
+      string fragment_id = 1;
+      int64 size = 2;
+      repeated StorageNodeInfo storage_node_ids = 3;
+    }
+
+    StatusCode status_code = 1;
+    uint32 total_num_fragments = 2;
+    repeated FragmentInfo fragment_layout = 5;
+  }
+
+  message DeleteResponse {
+    StatusCode status_code = 1;
+  }
+
+  message NodeStats {
+
+    message NodeInfo {
+      string node_id = 1;
+      int64 disk_space = 2;
+      int64 num_requests_handled = 3;
+    }
+
+    StatusCode status_code = 1;
+    repeated NodeInfo active_nodes = 2;
+  }
+
+  message LsResponse {
+    StatusCode status_code = 1;
+    repeated string file_names = 2;
+  }
+
+  oneof controller_message{
+    PlanResponse plan_response = 1;
+    FragLayoutResponse frag_layout_response = 2;
+    DeleteResponse delete_response = 3;
+    LsResponse ls_response = 4;
+    NodeStats node_stats = 5;
+  }
+
+}
+
+message ClientMessage{
+  enum RestOption {
+    GET = 0;
+    PUT = 1;
+    DELETE = 2;
+    LS = 3;
+    NODE_STATS = 4;
+  }
+
+  message PutRequest {
+    RestOption rest_option = 1;
+    string filename = 2;
+    int64 filesize = 3;
+    int64 optional_chunk_size = 4;
+  }
+
+  message GetRequest {
+    RestOption rest_option = 1;
+    string file_name = 2;
+  }
+
+  message DeleteRequest {
+    RestOption rest_option = 1;
+    string filename = 2;
+  }
+
+  message LsRequest {
+    RestOption rest_option = 1;
+  }
+
+  message NodeStatsRequest {
+    RestOption rest_option = 1;
+  }
+
+  oneof client_message{
+    PutRequest put_request = 1;
+    GetRequest get_request = 2;
+    DeleteRequest delete_request = 3;
+    LsRequest ls_request = 4;
+    NodeStatsRequest node_stats_request = 5;
+  }
+
+}
